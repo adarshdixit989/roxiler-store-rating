@@ -1,0 +1,3 @@
+const pool=require('../config/db');
+async function dashboard(req,res){const [stores]=await pool.query('SELECT id,name,address FROM stores WHERE owner_id=?',[req.user.id]);if(!stores.length)return res.json({store:null,average:0,users:[]});const s=stores[0];const[[a]]=await pool.query('SELECT COALESCE(ROUND(AVG(rating),2),0) average FROM ratings WHERE store_id=?',[s.id]);const[users]=await pool.query('SELECT u.name,u.email,u.address,r.rating,r.updated_at FROM ratings r JOIN users u ON u.id=r.user_id WHERE r.store_id=? ORDER BY r.updated_at DESC',[s.id]);res.json({store:s,average:a.average,users});}
+module.exports={dashboard};

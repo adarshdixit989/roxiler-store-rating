@@ -1,0 +1,4 @@
+const pool=require('../config/db');
+async function list(req,res){const{name='',address=''}=req.query;const[rows]=await pool.query(`SELECT s.id,s.name,s.address,COALESCE(ROUND(AVG(r.rating),2),0) overallRating,ur.rating userRating FROM stores s LEFT JOIN ratings r ON r.store_id=s.id LEFT JOIN ratings ur ON ur.store_id=s.id AND ur.user_id=? WHERE s.name LIKE ? AND s.address LIKE ? GROUP BY s.id ORDER BY s.name ASC`,[req.user.id,`%${name}%`,`%${address}%`]);res.json(rows);}
+async function rate(req,res){const storeId=Number(req.params.id), rating=Number(req.body.rating);if(!Number.isInteger(rating)||rating<1||rating>5)return res.status(400).json({message:'Rating must be between 1 and 5'});await pool.query('INSERT INTO ratings(user_id,store_id,rating) VALUES(?,?,?) ON DUPLICATE KEY UPDATE rating=VALUES(rating)',[req.user.id,storeId,rating]);res.json({message:'Rating saved'});}
+module.exports={list,rate};

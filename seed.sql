@@ -1,0 +1,6 @@
+-- Run schema.sql first, then use `npm run seed` from backend.
+-- The seed script generates fresh bcrypt hashes for the demo passwords.
+-- Demo accounts:
+-- admin@storerate.demo / Admin@123
+-- user@storerate.demo  / User@123
+-- owner@storerate.demo / Owner@123

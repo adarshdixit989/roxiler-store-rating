@@ -1,0 +1,1 @@
+const r=require('express').Router();const c=require('../controllers/storeController');const{auth,roles}=require('../middleware/auth');r.use(auth,roles('USER'));r.get('/',c.list);r.post('/:id/rating',c.rate);module.exports=r;
