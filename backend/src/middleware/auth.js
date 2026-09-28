@@ -1,1 +1,17 @@
-const r=require('express').Router();const c=require('../controllers/authController');const{auth}=require('../middleware/auth');r.post('/signup',c.signup);r.post('/login',c.login);r.put('/password',auth,c.changePassword);module.exports=r;
+const jwt=require('jsonwebtoken');
+
+function auth(req,res,next){
+  try{
+    const h=req.headers.authorization||'';
+    if(!h.startsWith('Bearer ')) return res.status(401).json({message:'Authentication required'});
+    req.user=jwt.verify(h.slice(7),process.env.JWT_SECRET);
+    next();
+  }catch(e){
+    return res.status(401).json({message:'Invalid or expired token'});
+  }
+}
+
+const roles=(...allowed)=>(req,res,next)=>
+  allowed.includes(req.user.role)?next():res.status(403).json({message:'Access denied'});
+
+module.exports={auth,roles};
